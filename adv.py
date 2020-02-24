@@ -13,8 +13,8 @@ world = World()
 # map_file = "maps/test_line.txt"
 # map_file = "maps/test_cross.txt"
 # map_file = "maps/test_loop.txt"
-# map_file = "maps/test_loop_fork.txt"
-map_file = "maps/main_maze.txt"
+map_file = "maps/test_loop_fork.txt"
+# map_file = "maps/main_maze.txt"
 
 # Loads the map into a dictionary
 room_graph = literal_eval(open(map_file, "r").read())
@@ -28,6 +28,33 @@ player = Player(world.starting_room)
 # Fill this out with directions to walk
 # traversal_path = ['n', 'n']
 traversal_path = []
+
+directions = {'n': 's', 's': 'n', 'e': 'w', 'w': 'e'}
+
+previous_direction = [None]
+rooms = {}
+visited = {}
+
+rooms[0] = player.current_room.get_exits()
+print(rooms[0])
+visited[0] = player.current_room.get_exits()
+
+while len(rooms) < len(room_graph) - 1:
+    if player.current_room.id not in rooms:
+        rooms[player.current_room.id] = player.current_room.get_exits()
+        visited[player.current_room.id] = player.current_room.get_exits()
+        last_direction = previous_direction[-1]
+        visited[player.current_room.id].remove(last_direction)
+
+    while len(visited[player.current_room.id]) < 1:
+        reverse = previous_direction.pop()
+        traversal_path.append(reverse)
+        player.travel(reverse)
+
+    exit_direction = visited[player.current_room.id].pop(0)
+    traversal_path.append(exit_direction)
+    previous_direction.append(directions[exit_direction])
+    player.travel(exit_direction)
 
 
 # TRAVERSAL TEST
